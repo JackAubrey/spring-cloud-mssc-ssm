@@ -6,7 +6,7 @@ import guru.springframework.msscssm.domain.PaymentState;
 import org.springframework.statemachine.StateMachine;
 
 public interface PaymentService {
-    static final String PAYMENT_ID_HEADER = "payment_id";
+    String PAYMENT_ID_HEADER = "payment_id";
 
     Payment newPayment(Payment payment);
     Payment getPayment(Long paymentId);

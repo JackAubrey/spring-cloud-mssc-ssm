@@ -25,6 +25,8 @@ import java.util.Random;
 @EnableStateMachineFactory
 @Configuration
 public class StateMachineConfig extends StateMachineConfigurerAdapter<PaymentState, PaymentEvent> {
+    Random rnd = new Random();
+
     @Override
     public void configure(StateMachineStateConfigurer<PaymentState, PaymentEvent> states) throws Exception {
         states.withStates()
@@ -70,7 +72,7 @@ public class StateMachineConfig extends StateMachineConfigurerAdapter<PaymentSta
         return context -> {
           log.info("PreAuth was called!!!");
 
-          if( new Random().nextInt(10) <8 ) {
+          if( rnd.nextInt(10) <8 ) {
               log.info("Approved!!!");
               sendEvent(context, PaymentEvent.PRE_AUTH_APPROVED);
           } else {
@@ -84,7 +86,7 @@ public class StateMachineConfig extends StateMachineConfigurerAdapter<PaymentSta
         return context -> {
             log.info("Auth was called!!!");
 
-            if( new Random().nextInt(10) <8 ) {
+            if( rnd.nextInt(10) <8 ) {
                 log.info("Auth Approved!!!");
                 sendEvent(context, PaymentEvent.AUTH_APPROVED);
             } else {
@@ -106,10 +108,9 @@ public class StateMachineConfig extends StateMachineConfigurerAdapter<PaymentSta
     }
 
     private static Message<PaymentEvent> getPaymentEventMessage(StateContext<PaymentState, PaymentEvent> context, PaymentEvent event) {
-        Message<PaymentEvent> message = MessageBuilder
+        return MessageBuilder
                 .withPayload(event)
                 .setHeader(PaymentService.PAYMENT_ID_HEADER, context.getMessageHeader(PaymentService.PAYMENT_ID_HEADER))
                 .build();
-        return message;
     }
 }
