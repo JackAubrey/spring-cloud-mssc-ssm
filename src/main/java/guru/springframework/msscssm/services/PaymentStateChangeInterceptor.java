@@ -26,12 +26,12 @@ public class PaymentStateChangeInterceptor extends StateMachineInterceptorAdapte
                                Transition<PaymentState, PaymentEvent> transition, StateMachine<PaymentState, PaymentEvent> stateMachine,
                                StateMachine<PaymentState, PaymentEvent> rootStateMachine) {
         Optional.ofNullable(message)
-                .ifPresent(msg -> Optional.ofNullable((Long) msg.getHeaders().getOrDefault(PaymentService.PAYMENT_ID_HEADER, -1L))
-                        .ifPresent(paymentId -> {
-                            log.debug("Saving payment with ID {} and State {}", paymentId, state.getId() );
-                            Payment payment = paymentRepository.getReferenceById(paymentId);
-                            payment.setState(state.getId());
-                            paymentRepository.save(payment);
-                        }));
+                .flatMap(msg -> Optional.ofNullable((Long) msg.getHeaders().getOrDefault(PaymentService.PAYMENT_ID_HEADER, -1L)))
+                .ifPresent(paymentId -> {
+                    log.debug("Saving payment with ID {} and State {}", paymentId, state.getId());
+                    Payment payment = paymentRepository.getReferenceById(paymentId);
+                    payment.setState(state.getId());
+                    paymentRepository.save(payment);
+                });
     }
 }
