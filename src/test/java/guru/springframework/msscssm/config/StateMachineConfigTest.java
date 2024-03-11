@@ -21,13 +21,16 @@ class StateMachineConfigTest {
     @Test
     void testNewStateMachine() {
         StateMachine<PaymentState, PaymentEvent> sm  = factory.getStateMachine(UUID.randomUUID());
-        sm.startReactively();
+        sm.startReactively().subscribe();
 
-        System.out.println("State Machine State before: " + sm.getState());
+        System.out.println("State Machine State: " + sm.getState().getId());
+
         Message<PaymentEvent> event = MessageBuilder.withPayload(PaymentEvent.PRE_AUTHORIZE).build();
-        sm.sendEvent(Mono.just(event)).subscribe(c -> {
-            System.out.println("State Machine State Completable: " + c.getRegion().getState());
-        });
-        System.out.println("State Machine State after: " + sm.getState());
+        sm.sendEvent(Mono.just(event)).subscribe();
+        System.out.println("State Machine State: " + sm.getState().getId());
+
+        Message<PaymentEvent> event2 = MessageBuilder.withPayload(PaymentEvent.PRE_AUTH_APPROVED).build();
+        sm.sendEvent(Mono.just(event2)).subscribe();
+        System.out.println("State Machine State: " + sm.getState().getId());
     }
 }
